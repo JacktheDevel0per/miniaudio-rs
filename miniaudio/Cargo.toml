@@ -1,7 +1,10 @@
 [package]
 name = "miniaudio"
-version = "0.10.0"
-authors = ["Adolph C. <adolphc@outlook.com>"]
+version = "0.11.0"
+authors = [
+    "Adolph C. <adolphc@outlook.com>",
+    "Jack <jack@lemonlime.tech>"
+]
 edition = "2018"
 description = "Bindings to the miniaudio C library."
 documentation = "https://docs.rs/miniaudio"
@@ -63,4 +66,4 @@ ma-debug-output = ["ep-miniaudio-sys/ma-debug-output"]
 
 [dependencies]
 ep-miniaudio-sys = { version = "2", path = "../miniaudio-sys", default-features = false }
-bitflags = "1.2"
+bitflags = "2.4.1"
