@@ -18,9 +18,9 @@ fn simple_engine_sound_load() {
 
     let mut engine = result_engine.unwrap();
 
+    
 
-
-    engine.play_sound("C:/Users/dev/Documents/code/rust/miniaudio-rs-new/miniaudio/examples/assets/exit.wav", None);
+    engine.play_sound("miniaudio/examples/assets/exit.wav", None);
 
 
 

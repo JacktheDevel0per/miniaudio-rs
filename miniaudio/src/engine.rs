@@ -132,6 +132,13 @@ impl Engine {
 
 
 
+    #[inline]
+    pub fn get_device(&mut self) {
+        unsafe {
+            ffi::ma_engine_get_device(&mut self.0);
+        }
+    }
+
 
 
 
