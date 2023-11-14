@@ -103,7 +103,7 @@ fn generate_bindings() {
         // We just use one big generated header created by concatenating what we need.
         .header(header)
         .size_t_is_usize(true)
-        .rustfmt_bindings(true)
+        .formatter(bindgen::Formatter::Rustfmt)
         .layout_tests(true)
         .derive_copy(true)
         .impl_debug(true)

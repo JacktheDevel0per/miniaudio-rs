@@ -91,5 +91,5 @@ unsafe extern "C" fn data_callback(
     let sine_wave = transmute::<_, *mut sys::ma_waveform>((*device_ptr).pUserData);
     assert_ne!(sine_wave, null_mut());
 
-    sys::ma_waveform_read_pcm_frames(sine_wave, output_ptr, frame_count as _);
+    sys::ma_waveform_read_pcm_frames(sine_wave, output_ptr, frame_count as _, 0 as *mut _);
 }
