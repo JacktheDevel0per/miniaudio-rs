@@ -1,4 +1,4 @@
-use crate::ffi;
+use crate::{ffi, sound::Sound};
 
 
 
@@ -15,8 +15,11 @@ impl EngineConfig {
 }
 
 
+pub struct Fence(ffi::ma_fence);
+
 
 pub struct Engine(ffi::ma_engine);
+
 
 
 
@@ -141,6 +144,66 @@ impl Engine {
 
 
 
+    /*
+    
+    
+                // Allocate memory for ma_engine on the heap
+            let ma_engine: Box<ffi::ma_engine> = Box::new(std::mem::zeroed());
+
+            // Get a raw pointer to the allocated memory
+            let raw_ma_engine = Box::into_raw(ma_engine);
+
+            // Pass the raw pointer to the allocated memory
+            let result = ffi::ma_engine_init(&engine_config.0 as *const _, raw_ma_engine);
+
+            if result != ffi::MA_SUCCESS {
+                println!("miniaudio-rs: Failed to initialize engine. err: {}", result);
+
+                // Reclaim ownership of the Box to ensure it gets deallocated
+                let _ = Box::from_raw(raw_ma_engine);
+
+                return Err(result);
+            }
+
+            // Move ownership of the Box into the Engine struct
+            return Ok(Engine { 0: *Box::from_raw(raw_ma_engine) });
+    
+     */
+
+    #[inline]
+    pub fn init_sound_from_file(&mut self, file_path: &str, flags: u32, group: Option<i8>, fence: Option<&mut Fence>) -> Result<Sound, i32> {
+        // Convert the Rust string to a C-style string
+        let c_file_path = std::ffi::CString::new(file_path).expect("miniaudio-rs: CString conversion failed");
+
+        unsafe {
+            let ma_sound: Box<ffi::ma_sound> = Box::new(std::mem::zeroed());
+
+            let ptr_ma_sound: *mut ffi::ma_sound = Box::into_raw(ma_sound);
+
+            let result = ffi::ma_sound_init_from_file(&mut self.0, c_file_path.as_ptr(), 
+                flags,
+                if let Some(group_used) = group { group_used as *mut _ }  else { std::ptr::null_mut() },
+                // if let Some(fence_used) = fence { fence_used as *mut _ }  else { std::ptr::null_mut() }
+                if let Some(fence_used) = fence { &mut fence_used.0 as *mut _ }  else { std::ptr::null_mut() }, //todo: fence
+
+                ptr_ma_sound
+                
+            );
+
+            if result != ffi::MA_SUCCESS {
+                println!("miniaudio-rs: Failed to initialize sound from file. err: {}", result);
+
+                // Reclaim ownership of the Box to ensure it gets deallocated
+                let _ = Box::from_raw(ptr_ma_sound);
+
+                return Err(result);
+            }
+
+            return Ok(Sound::from_raw(*ptr_ma_sound));
+    }
+    }
+
+
 
 
     
@@ -159,3 +222,5 @@ impl Drop for Engine {
         }
     }
 }
+
+
