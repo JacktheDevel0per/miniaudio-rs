@@ -146,27 +146,11 @@ impl Engine {
 
     /*
     
-    
-                // Allocate memory for ma_engine on the heap
-            let ma_engine: Box<ffi::ma_engine> = Box::new(std::mem::zeroed());
 
-            // Get a raw pointer to the allocated memory
-            let raw_ma_engine = Box::into_raw(ma_engine);
 
-            // Pass the raw pointer to the allocated memory
-            let result = ffi::ma_engine_init(&engine_config.0 as *const _, raw_ma_engine);
 
-            if result != ffi::MA_SUCCESS {
-                println!("miniaudio-rs: Failed to initialize engine. err: {}", result);
 
-                // Reclaim ownership of the Box to ensure it gets deallocated
-                let _ = Box::from_raw(raw_ma_engine);
-
-                return Err(result);
-            }
-
-            // Move ownership of the Box into the Engine struct
-            return Ok(Engine { 0: *Box::from_raw(raw_ma_engine) });
+    Currenty this function does not correctly interface with the C api. causing a -2 (MA_INVALID_ARGS) error.
     
      */
 
@@ -180,12 +164,12 @@ impl Engine {
 
             let ptr_ma_sound: *mut ffi::ma_sound = Box::into_raw(ma_sound);
 
-            let result = ffi::ma_sound_init_from_file(&mut self.0, c_file_path.as_ptr(), 
+            let result = ffi::ma_sound_init_from_file(
+                &mut self.0, 
+                c_file_path.as_ptr(), 
                 flags,
                 if let Some(group_used) = group { group_used as *mut _ }  else { std::ptr::null_mut() },
-                // if let Some(fence_used) = fence { fence_used as *mut _ }  else { std::ptr::null_mut() }
-                if let Some(fence_used) = fence { &mut fence_used.0 as *mut _ }  else { std::ptr::null_mut() }, //todo: fence
-
+                if let Some(fence_used) = fence { &mut fence_used.0 as *mut _ }  else { std::ptr::null_mut() },
                 ptr_ma_sound
                 
             );
