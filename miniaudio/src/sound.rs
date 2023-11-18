@@ -4,11 +4,20 @@ use crate::ffi;
 pub struct Sound(ffi::ma_sound);
 
 
-impl Sound {
 
+
+
+impl From<*mut miniaudio_sys::ma_sound> for Sound {
     #[inline]
-    pub fn from_raw(sound: ffi::ma_sound) -> Self {
-        Self(sound)
+    fn from(sound: *mut miniaudio_sys::ma_sound) -> Self {
+        Sound(unsafe { *sound })
+    }
+}
+
+impl Into<Sound> for ffi::ma_sound {
+    #[inline]
+    fn into(self) -> Sound {
+        Sound(self)
     }
 }
 

@@ -29,6 +29,8 @@ impl Engine {
         unsafe {
             // Allocate memory for ma_engine on the heap
             let ma_engine: Box<ffi::ma_engine> = Box::new(std::mem::zeroed());
+            
+            
 
             // Get a raw pointer to the allocated memory
             let raw_ma_engine = Box::into_raw(ma_engine);
@@ -157,12 +159,17 @@ impl Engine {
     #[inline]
     pub fn init_sound_from_file(&mut self, file_path: &str, flags: u32, group: Option<i8>, fence: Option<&mut Fence>) -> Result<Sound, i32> {
         // Convert the Rust string to a C-style string
-        let c_file_path = std::ffi::CString::new(file_path).expect("miniaudio-rs: CString conversion failed");
+        let c_file_path = match std::ffi::CString::new(file_path) {
+            Ok(cstr) => {cstr},
+            Err(_) => { return Err(-1);},
+        };
+
+
 
         unsafe {
             let ma_sound: Box<ffi::ma_sound> = Box::new(std::mem::zeroed());
 
-            let ptr_ma_sound: *mut ffi::ma_sound = Box::into_raw(ma_sound);
+            let ptr_ma_sound = Box::into_raw(ma_sound);
 
             let result = ffi::ma_sound_init_from_file(
                 &mut self.0, 
@@ -182,8 +189,8 @@ impl Engine {
 
                 return Err(result);
             }
-
-            return Ok(Sound::from_raw(*ptr_ma_sound));
+            //Should I leave this to `From`` (remove *), or remove `From` impl?
+            return Ok((*ptr_ma_sound).into());
     }
     }
 
